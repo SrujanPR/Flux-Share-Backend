@@ -7,7 +7,10 @@ export const uploadImage = async (request, response) => {
     }
     try {
         const file = await File.create(fileObj);
-        response.status(200).json({ path: `http://localhost:8000/file/${file._id}`})
+        const protocol = request.protocol;
+        const host = request.get('host');
+        const baseUrl = `${protocol}://${host}`;
+        response.status(200).json({ path: `${baseUrl}/file/${file._id}`})
     } catch (error) {
         console.error(error.message);
         response.status(500).json({ message: error.message });
