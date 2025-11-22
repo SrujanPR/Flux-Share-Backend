@@ -1,8 +1,11 @@
 import File from "../models/file.js";
+import fs from "fs";
+import path from "path";
 
 export const uploadImage = async (request, response) => {
+    const absolutePath = path.resolve(request.file.path);
     const fileObj = {
-        path: request.file.path,
+        path: absolutePath,
         name: request.file.originalname
     }
     try {
@@ -21,6 +24,12 @@ export const uploadImage = async (request, response) => {
 export const downloadImage = async (request, response) => {
     try {
         const file = await File.findById(request.params.fileId);
+        if (!file) {
+            return response.status(404).json({ message: "File not found" });
+        }
+        if (!fs.existsSync(file.path)) {
+            return response.status(404).json({ message: "File unavailable on server (storage cleared or moved)" });
+        }
         file.downloadContent++;
         await file.save();
         response.download(file.path, file.name);
