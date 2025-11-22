@@ -5,6 +5,9 @@ import DBConnection from "./database/db.js";
 
 const app = express();
 
+// honor X-Forwarded-* headers when behind a proxy/CDN (Render)
+app.set('trust proxy', true);
+
 app.use(cors());
 app.use("/", router);
 
